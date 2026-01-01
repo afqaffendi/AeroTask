@@ -8,5 +8,6 @@ data class Assignment(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val subject: String,
     val title: String,
-    val deadline: String
+    val deadline: String,
+    val sender: String // Add this line!
 )
