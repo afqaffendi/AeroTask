@@ -48,9 +48,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         checkNotificationPermission()
 
-        // Apply Pop Animations to Buttons
-        setupAnimations()
-
         binding.etDeadline.setOnClickListener {
             showDateTimePicker()
         }
@@ -64,7 +61,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
-    // --- Helper for the Pop Animation ---
     private fun animateView(view: View, onEnd: () -> Unit) {
         view.animate()
             .scaleX(0.95f)
@@ -78,10 +74,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     .withEndAction { onEnd() }
                     .start()
             }.start()
-    }
-
-    private fun setupAnimations() {
-        // You can add more view initializations here if needed
     }
 
     private fun checkNotificationPermission() {
@@ -108,24 +100,38 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val title = binding.etTitle.text.toString().trim()
         val date = binding.etDeadline.text.toString().trim()
 
-        val sharedPref = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val classCode = sharedPref.getString("class_code", "GLOBAL") ?: "GLOBAL"
-        val currentUserEmail = auth.currentUser?.email ?: "Anonymous"
+        // 1. Get current user info
+        val currentUser = auth.currentUser
+        val currentUserId = currentUser?.uid
+        val currentUserEmail = currentUser?.email
+
+        if (currentUserId == null) {
+            Toast.makeText(requireContext(), "Error: User not logged in", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         if (subject.isEmpty() || title.isEmpty() || date.isEmpty()) {
             Toast.makeText(requireContext(), "Fill in Subject, Title, and Date", Toast.LENGTH_SHORT).show()
             return
         }
 
+        // 2. Fetch YOUR account-specific class code from SharedPreferences
+        val prefs = requireContext().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+        val userSpecificKey = "class_code_$currentUserId" // Unique to this account
+        val myCurrentClassCode = prefs.getString(userSpecificKey, "PRIVATE") ?: "PRIVATE"
+
         setLoadingState(true)
 
+        // 3. Create the Task Map with the correct Class Code
         val taskMap = hashMapOf(
-            "classCode" to classCode,
             "sender" to if (nickname.isEmpty()) "Anonymous" else nickname,
             "senderEmail" to currentUserEmail,
             "subject" to subject,
             "title" to title,
-            "deadline" to date
+            "deadline" to date,
+            "isDone" to false,
+            "classCode" to myCurrentClassCode, // STAMPED with your specific group code
+            "userId" to currentUserId         // STAMPED with your account ID
         )
 
         firestore.collection("assignments").add(taskMap)
@@ -134,19 +140,21 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
                 val localTask = Assignment(
                     docId = documentReference.id,
-                    classCode = classCode,
+                    classCode = myCurrentClassCode,
                     subject = subject,
                     title = title,
                     deadline = date,
                     sender = if (nickname.isEmpty()) "Anonymous" else nickname,
-                    senderEmail = currentUserEmail
+                    senderEmail = currentUserEmail ?: ""
                 )
 
                 lifecycleScope.launch(Dispatchers.IO) {
                     dbLocal.assignmentDao().insert(localTask)
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(requireContext(), "Shared with Class $classCode!", Toast.LENGTH_SHORT).show()
-                        findNavController().popBackStack()
+                        setLoadingState(false)
+                        val msg = if (myCurrentClassCode == "PRIVATE") "Saved Privately" else "Shared with Group!"
+                        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                        findNavController().navigate(R.id.nav_gallery)
                     }
                 }
             }
@@ -168,12 +176,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     "title" to "Deadline Reminder: $title",
                     "subject" to "$subject is due in 1 hour!"
                 )
-
                 val notificationRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
                     .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                     .setInputData(data)
                     .build()
-
                 WorkManager.getInstance(requireContext()).enqueue(notificationRequest)
             }
         } catch (e: Exception) { e.printStackTrace() }

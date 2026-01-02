@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -8,37 +7,26 @@
     android:padding="32dp"
     android:background="#000000">
 
-    <ImageView
-        android:id="@+id/ivLogo"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginBottom="24dp"
-        android:src="@drawable/remindericon"
-        android:contentDescription="App Logo" />
-
     <TextView
-        android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Reminder Share"
-        android:textSize="30sp"
-        android:letterSpacing="0.0"
+        android:text="Create Account"
+        android:textSize="28sp"
         android:textStyle="bold"
         android:textColor="#FFFFFF"
-        android:layout_marginBottom="3dp"/>
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="4dp"/>
 
     <TextView
-        android:id="@+id/tvSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login to sync with your class"
+        android:text="Join your classmates today"
         android:textSize="14sp"
         android:textColor="#BBBBBB"
         android:layout_marginBottom="40dp"/>
 
     <EditText
-        android:id="@+id/etEmail"
+        android:id="@+id/etRegEmail"
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:hint="Student Email"
@@ -50,11 +38,11 @@
         android:inputType="textEmailAddress" />
 
     <EditText
-        android:id="@+id/etPassword"
+        android:id="@+id/etRegPassword"
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:layout_marginTop="16dp"
-        android:hint="Password"
+        android:hint="Password (min 6 chars)"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
         android:textColor="#FFFFFF"
@@ -62,51 +50,23 @@
         android:background="@drawable/bg_input_pill"
         android:inputType="textPassword" />
 
-    <TextView
-        android:id="@+id/tvForgotPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="8dp"
-        android:text="Forgot Password?"
-        android:textColor="#FFD571"
-        android:textStyle="bold"
-        android:textSize="13sp" />
-
-    <CheckBox
-        android:id="@+id/cbRememberMe"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Remember Me"
-        android:textColor="#BBBBBB"
-        android:buttonTint="#FFD571" />
-
-    <ProgressBar
-        android:id="@+id/loginProgressBar"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="16dp"
-        android:visibility="gone"
-        android:indeterminateTint="#FFD571" />
-
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnLogin"
+        android:id="@+id/btnRegister"
         android:layout_width="match_parent"
         android:layout_height="55dp"
-        android:layout_marginTop="8dp"
-        android:text="LOGIN"
+        android:layout_marginTop="32dp"
+        android:text="SIGN UP"
         android:textStyle="bold"
         android:textColor="#000000"
         android:background="@drawable/bg_pill_yellow" />
 
     <TextView
-        android:id="@+id/tvSignUp"
+        android:id="@+id/tvBackToLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Don't have an account? Sign Up"
-        android:textColor="#FFD571"
+        android:text="Already have an account? Login"
+        android:textColor="#FFD700"
         android:textStyle="bold"
         android:textSize="14sp" />
 

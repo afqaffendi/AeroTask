@@ -46,11 +46,10 @@ class GalleryFragment : Fragment(R.layout.fragment_gallery) {
         setupNavigationListeners()
         setupSearch()
         setupSwipeToDelete()
-        fetchCloudData()
+        fetchCloudData() // This now uses account-specific filtering
     }
 
     private fun setupRecyclerView() {
-        // Updated to include the new 4th parameter: onDeleteTask callback
         adapter = AssignmentAdapter(
             assignments = emptyList(),
             onFilterResult = { isEmpty ->
@@ -60,7 +59,6 @@ class GalleryFragment : Fragment(R.layout.fragment_gallery) {
                 updateLocalProgress(assignment, isChecked)
             },
             onDeleteTask = { task, color ->
-                // Handles deletion via Long-Press on the card
                 if (task.senderEmail == auth.currentUser?.email) {
                     showDeleteConfirmation(task, color)
                 } else {
@@ -103,7 +101,6 @@ class GalleryFragment : Fragment(R.layout.fragment_gallery) {
                 val position = viewHolder.adapterPosition
                 val task = adapter.getAssignmentAt(position)
 
-                // Permission check
                 if (task.senderEmail == auth.currentUser?.email) {
                     showDeleteConfirmation(task, Color.LTGRAY, position)
                 } else {
@@ -115,12 +112,8 @@ class GalleryFragment : Fragment(R.layout.fragment_gallery) {
         ItemTouchHelper(callback).attachToRecyclerView(binding.recyclerViewGallery)
     }
 
-    /**
-     * REDESIGNED DIALOG:
-     * Uses MaterialAlertDialogBuilder for rounded corners matching the pill cards.
-     */
     private fun showDeleteConfirmation(task: Assignment, accentColor: Int, position: Int? = null) {
-        MaterialAlertDialogBuilder(requireContext(), R.style.RoundedDialog)
+        val dialog = MaterialAlertDialogBuilder(requireContext(), R.style.RoundedDialog)
             .setIcon(R.drawable.ic_menu_delete)
             .setTitle("Delete Task")
             .setMessage("Are you sure you want to remove '${task.title}'? This cannot be undone.")
@@ -133,12 +126,14 @@ class GalleryFragment : Fragment(R.layout.fragment_gallery) {
                         Toast.makeText(requireContext(), "Error deleting task", Toast.LENGTH_SHORT).show()
                     }
             }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                // Restore the item if it was swiped
+            .setNegativeButton("Cancel") { d, _ ->
                 position?.let { adapter.notifyItemChanged(it) }
-                dialog.dismiss()
+                d.dismiss()
             }
             .show()
+
+        dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE).setTextColor(Color.RED)
+        dialog.getButton(android.content.DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
     }
 
     private fun animateView(view: View, onEnd: () -> Unit) {
@@ -154,13 +149,28 @@ class GalleryFragment : Fragment(R.layout.fragment_gallery) {
         }
     }
 
+    /**
+     * ACCOUNT-SPECIFIC DATA FETCHING:
+     * This pulls the class code specifically saved to the logged-in user's UID.
+     */
     private fun fetchCloudData() {
-        val sharedPref = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val classCode = sharedPref.getString("class_code", "GLOBAL") ?: "GLOBAL"
+        val currentUserId = auth.currentUser?.uid ?: return
 
+        // 1. Access AppPrefs (matching the HomeFragment we just updated)
+        val prefs = requireContext().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+
+        // 2. Get the specific key for THIS user
+        val userSpecificKey = "class_code_$currentUserId"
+        val myClassCode = prefs.getString(userSpecificKey, "PRIVATE") ?: "PRIVATE"
+
+        // 3. Query Firestore for tasks belonging to THIS specific class folder
         firestore.collection("assignments")
-            .whereEqualTo("classCode", classCode)
-            .addSnapshotListener { snapshots, _ ->
+            .whereEqualTo("classCode", myClassCode)
+            .addSnapshotListener { snapshots, error ->
+                if (error != null) {
+                    return@addSnapshotListener
+                }
+
                 val cloudList = snapshots?.map { doc ->
                     Assignment(
                         docId = doc.id,
@@ -173,6 +183,7 @@ class GalleryFragment : Fragment(R.layout.fragment_gallery) {
                         isDone = doc.getBoolean("isDone") ?: false
                     )
                 } ?: emptyList()
+
                 adapter.updateData(cloudList)
             }
     }

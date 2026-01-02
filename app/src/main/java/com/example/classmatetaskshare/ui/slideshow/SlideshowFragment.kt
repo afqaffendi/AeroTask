@@ -12,6 +12,7 @@ import com.example.classmatetaskshare.databinding.FragmentSlideshowBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import android.graphics.Color
 
 class SlideshowFragment : Fragment(R.layout.fragment_slideshow) {
 
@@ -44,24 +45,36 @@ class SlideshowFragment : Fragment(R.layout.fragment_slideshow) {
     }
 
     private fun showLeaveConfirmation() {
-        val sharedPref = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        // FIXED: Define the variable to solve the red error
-        val currentCode = sharedPref.getString("class_code", "this folder") ?: "this folder"
+        val currentUserId = auth.currentUser?.uid ?: return
+        val sharedPref = requireActivity().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+        val userSpecificKey = "class_code_$currentUserId"
 
-        MaterialAlertDialogBuilder(requireContext(), R.style.CustomMaterialDialog)
+        val currentCode = sharedPref.getString(userSpecificKey, "this folder") ?: "this folder"
+
+        val dialog = MaterialAlertDialogBuilder(requireContext(), R.style.RoundedDialog)
+            .setIcon(R.drawable.ic_folder)
             .setTitle("Leave Folder?")
-            .setMessage("You won't see reminders for $currentCode until you join again.")
-            .setPositiveButton("Leave") { _, _ ->
-                sharedPref.edit().remove("class_code").apply()
+            .setMessage("You won't see reminders for '$currentCode' until you join again.")
+            .setPositiveButton("LEAVE") { _, _ ->
+                // ONLY removes the folder for the logged-in user
+                sharedPref.edit().remove(userSpecificKey).apply()
                 updateClassUI()
+                Toast.makeText(requireContext(), "You have left $currentCode", Toast.LENGTH_SHORT).show()
             }
-            .setNegativeButton("Stay", null)
+            .setNegativeButton("STAY", null)
             .show()
+
+        dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED)
+        dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
     }
 
     private fun updateClassUI() {
-        val sharedPref = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val savedCode = sharedPref.getString("class_code", null)
+        val currentUserId = auth.currentUser?.uid ?: return
+        val sharedPref = requireActivity().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+
+        // Fetch the code specific to THIS account
+        val userSpecificKey = "class_code_$currentUserId"
+        val savedCode = sharedPref.getString(userSpecificKey, null)
 
         if (savedCode != null) {
             binding.tvCurrentClass.text = "Active Folder: $savedCode"
@@ -76,9 +89,15 @@ class SlideshowFragment : Fragment(R.layout.fragment_slideshow) {
     }
 
     private fun saveClassCode(code: String) {
-        val sharedPref = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        sharedPref.edit().putString("class_code", code).apply()
+        val currentUserId = auth.currentUser?.uid ?: return
+        val sharedPref = requireActivity().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+
+        // Save the code using the unique Account Key
+        val userSpecificKey = "class_code_$currentUserId"
+        sharedPref.edit().putString(userSpecificKey, code).apply()
+
         updateClassUI()
+        Toast.makeText(requireContext(), "Joined Folder: $code", Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {
