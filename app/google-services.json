@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "980338266342",
+    "project_id": "classmate-task-share",
+    "storage_bucket": "classmate-task-share.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:980338266342:android:23f6a95d304e68cc596b27",
+        "android_client_info": {
+          "package_name": "com.example.classmatetaskshare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGLDwc2IQjNjcu0_akIyjlqmuC1HVyc5s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
