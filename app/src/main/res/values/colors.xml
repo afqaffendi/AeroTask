@@ -7,4 +7,11 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="pill_yellow">#FFD571</color>
+    <color name="pill_blue">#A0E7E5</color>
+    <color name="pill_green">#B4F8C8</color>
+    <color name="pill_pink">#FFAEBC</color>
+    <color name="pill_purple">#CFBAF0</color>
+
 </resources>

@@ -1,15 +1,12 @@
 package com.example.classmatetaskshare
 
 import android.os.Bundle
-import android.view.Menu
-import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.AppCompatActivity
 import com.example.classmatetaskshare.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -25,25 +22,28 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.appBarMain.toolbar)
 
-        val drawerLayout: DrawerLayout = binding.drawerLayout
-        val navView: NavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_content_main)
 
-        // Only Task Board (Gallery) and Profile (Slideshow) are main screens.
-        // Post Task (Home) will now automatically show a BACK button.
-        appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.nav_gallery, R.id.nav_slideshow),
-            drawerLayout
-        )
+        // 1. Mark R.id.nav_gallery (Reminder List) as the top-level destination.
+        // This naturally removes the back arrow from that page.
+        appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_gallery))
 
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        binding.navView.setupWithNavController(navController)
+
+        // 2. Add a listener to control exactly when the icon is visible.
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (destination.id == R.id.nav_gallery) {
+                // Remove both hamburger and arrow on the Reminder List page
+                binding.appBarMain.toolbar.navigationIcon = null
+            } else {
+                // Let the back arrow appear for Profile and Create Task pages
+                // This ensures you can still click "Back" to return to the list
+            }
+        }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
+    // Keep onCreateOptionsMenu REMOVED to hide triple-dots
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)

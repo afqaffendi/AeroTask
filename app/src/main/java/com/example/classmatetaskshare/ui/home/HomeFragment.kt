@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -45,20 +46,42 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentHomeBinding.bind(view)
 
-        // 1. Request Notification Permissions for Android 13+
         checkNotificationPermission()
+
+        // Apply Pop Animations to Buttons
+        setupAnimations()
 
         binding.etDeadline.setOnClickListener {
             showDateTimePicker()
         }
 
         binding.btnSave.setOnClickListener {
-            saveTaskToCloud()
+            animateView(it) { saveTaskToCloud() }
         }
 
         binding.btnShare.setOnClickListener {
-            shareTaskExternally()
+            animateView(it) { shareTaskExternally() }
         }
+    }
+
+    // --- Helper for the Pop Animation ---
+    private fun animateView(view: View, onEnd: () -> Unit) {
+        view.animate()
+            .scaleX(0.95f)
+            .scaleY(0.95f)
+            .setDuration(100)
+            .withEndAction {
+                view.animate()
+                    .scaleX(1.0f)
+                    .scaleY(1.0f)
+                    .setDuration(100)
+                    .withEndAction { onEnd() }
+                    .start()
+            }.start()
+    }
+
+    private fun setupAnimations() {
+        // You can add more view initializations here if needed
     }
 
     private fun checkNotificationPermission() {
@@ -107,7 +130,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         firestore.collection("assignments").add(taskMap)
             .addOnSuccessListener { documentReference ->
-                // 2. Schedule Local Notification
                 scheduleNotification(title, subject, date)
 
                 val localTask = Assignment(
@@ -122,11 +144,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
                 lifecycleScope.launch(Dispatchers.IO) {
                     dbLocal.assignmentDao().insert(localTask)
-                }
-
-                _binding?.let {
-                    Toast.makeText(requireContext(), "Shared with Class $classCode!", Toast.LENGTH_SHORT).show()
-                    findNavController().popBackStack()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "Shared with Class $classCode!", Toast.LENGTH_SHORT).show()
+                        findNavController().popBackStack()
+                    }
                 }
             }
             .addOnFailureListener { e ->
@@ -140,10 +161,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         try {
             val deadlineDate = sdf.parse(deadlineStr)
             val currentTime = System.currentTimeMillis()
+            val delay = (deadlineDate!!.time - currentTime) - (60 * 60 * 1000)
 
-            // Calculate delay: Trigger 1 hour (3600000ms) before the deadline
-            // val delay = (deadlineDate!!.time - currentTime) - (60 * 60 * 1000)
-            val delay = 5000L
             if (delay > 0) {
                 val data = workDataOf(
                     "title" to "Deadline Reminder: $title",
@@ -157,9 +176,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
                 WorkManager.getInstance(requireContext()).enqueue(notificationRequest)
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        } catch (e: Exception) { e.printStackTrace() }
     }
 
     private fun shareTaskExternally() {
