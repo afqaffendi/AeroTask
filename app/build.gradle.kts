@@ -49,6 +49,8 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation(libs.androidx.cardview)
 
+    //Push Notification
+    implementation ("androidx.work:work-runtime-ktx:2.9.0")
     // FEATURE 1: Offline (Room)
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")

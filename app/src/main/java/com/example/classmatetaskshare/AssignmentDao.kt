@@ -9,4 +9,7 @@ interface AssignmentDao {
 
     @Query("SELECT * FROM assignments ORDER BY id DESC")
     suspend fun getAllAssignments(): List<Assignment>
+
+    @Update
+    suspend fun update(assignment: Assignment)
 }

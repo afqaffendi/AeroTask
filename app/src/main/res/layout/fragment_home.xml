@@ -31,10 +31,13 @@
         android:hint="Assignment Title" />
 
     <EditText
-        android:id="@+id/etDate"
+        android:id="@+id/etDeadline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Deadline (e.g. 15 Jan)" />
+        android:hint="Select Deadline"
+        android:focusable="false"
+        android:clickable="true"
+        android:inputType="none" />
 
     <ProgressBar
         android:id="@+id/progressBar"
