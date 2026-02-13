@@ -1,110 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
-    android:padding="24dp">
+    android:background="#121212">
 
-    <TextView
-        android:id="@+id/tvHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Hey,\nWhat's the move today?"
-        android:textColor="#FFFFFF"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <LinearLayout
-        android:id="@+id/inputGroup"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/tvHeader">
+        android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/etSenderName"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/bg_input_pill"
-            android:hint="Your Nickname"
-            android:paddingHorizontal="20dp"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#66FFFFFF" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
 
-        <EditText
-            android:id="@+id/etSubject"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/bg_input_pill"
-            android:hint="Subject (e.g., Math, Science)"
-            android:paddingHorizontal="20dp"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#66FFFFFF" />
+            <TextView
+                android:id="@+id/tvGreeting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hey,\nWhats the move today?"
+                android:textColor="#FFFFFF"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="32dp"/>
 
-        <EditText
-            android:id="@+id/etTitle"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/bg_input_pill"
-            android:hint="Task Title"
-            android:paddingHorizontal="20dp"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#66FFFFFF" />
+            <RelativeLayout
+                android:id="@+id/layoutTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
 
-        <EditText
-            android:id="@+id/etDeadline"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="@drawable/bg_input_pill"
-            android:clickable="true"
-            android:focusable="false"
-            android:hint="Set Deadline"
-            android:inputType="none"
-            android:paddingHorizontal="20dp"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#66FFFFFF" />
-    </LinearLayout>
+                <EditText
+                    android:id="@+id/etTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:background="@drawable/bg_input_pill"
+                    android:hint="Task Title"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="60dp"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#66FFFFFF"/>
+            </RelativeLayout>
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
+            <EditText
+                android:id="@+id/etSubject"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_input_pill"
+                android:hint="Subject (e.g. CSC661)"
+                android:paddingHorizontal="20dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#66FFFFFF"/>
+
+            <EditText
+                android:id="@+id/etDeadline"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_input_pill"
+                android:focusable="false"
+                android:hint="Select Deadline"
+                android:paddingHorizontal="20dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#66FFFFFF"/>
+
+            <EditText
+                android:id="@+id/etSenderName"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="32dp"
+                android:background="@drawable/bg_input_pill"
+                android:hint="Your Nickname"
+                android:paddingHorizontal="20dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#66FFFFFF"/>
+
+            <Button
+                android:id="@+id/btnSave"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:backgroundTint="#FFD571"
+                android:text="SAVE &amp; SHARE"
+                android:textColor="#121212"
+                android:textStyle="bold"
+                app:cornerRadius="30dp"/>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:visibility="gone"
+                android:indeterminateTint="#FFD571"/>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <FrameLayout
+        android:id="@+id/successOverlay"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
+        android:layout_height="match_parent"
+        android:background="#E6121212"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/inputGroup" />
+        android:clickable="true"
+        android:focusable="true">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnSave"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/bg_pill_coral"
-        android:text="Create Task &amp; Share"
-        android:textAllCaps="false"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/btnShare" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnShare"
-        android:layout_width="match_parent"
-        android:layout_height="54dp"
-        android:layout_marginBottom="16dp"
-        android:background="@android:color/transparent"
-        android:text="External Share"
-        android:textAllCaps="false"
-        android:textColor="#66FFFFFF"
-        app:layout_constraintBottom_toBottomOf="parent" />
+            <ImageView
+                android:id="@+id/ivConfetti"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/ic_cloud_done"
+                app:tint="#FFD571" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="REMINDER SHARED!"
+                android:textColor="#FFD571"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </FrameLayout>
+</FrameLayout>

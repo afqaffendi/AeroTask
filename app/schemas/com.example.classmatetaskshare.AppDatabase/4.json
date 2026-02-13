@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "cb488ebe069841093757ae3eb3e3ea6d",
+    "identityHash": "884e9558f4cedfac135b8eb78b4bf069",
     "entities": [
       {
         "tableName": "assignments",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `docId` TEXT NOT NULL, `subject` TEXT NOT NULL, `title` TEXT NOT NULL, `deadline` TEXT NOT NULL, `sender` TEXT NOT NULL, `senderEmail` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `docId` TEXT NOT NULL, `classCode` TEXT NOT NULL, `subject` TEXT NOT NULL, `title` TEXT NOT NULL, `deadline` TEXT NOT NULL, `sender` TEXT NOT NULL, `senderEmail` TEXT NOT NULL, `isDone` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -17,6 +17,12 @@
           {
             "fieldPath": "docId",
             "columnName": "docId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "classCode",
+            "columnName": "classCode",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -49,6 +55,18 @@
             "columnName": "senderEmail",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "isDone",
+            "columnName": "isDone",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -64,7 +82,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cb488ebe069841093757ae3eb3e3ea6d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '884e9558f4cedfac135b8eb78b4bf069')"
     ]
   }
 }

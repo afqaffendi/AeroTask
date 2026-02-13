@@ -13,5 +13,6 @@ data class Assignment(
     val deadline: String = "",
     val sender: String = "",
     val senderEmail: String = "",
-    val isDone: Boolean = false
+    val isDone: Boolean = false,
+    val timestamp: Long = System.currentTimeMillis()
 )
